@@ -1,6 +1,6 @@
 version: "3.9"
 
-services: 
+services:
   postgres:
     image: postgres:16
     container_name: postgres
@@ -10,10 +10,10 @@ services:
       POSTGRES_USER: anime
       POSTGRES_PASSWORD: anime
     volumes:
-    - postgres_data:/var/lib/postgresql/data
-    network:
-    - anime-net
-
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - anime-net
+      
 
   redis:
     image: redis:7
@@ -41,18 +41,18 @@ services:
       - anime-net
 
   api:
-    build: ../gataway
-    command: ["uvicorn", "gataway.main:app", "--host", "0.0.0.0", "--port", "8000"]
+    build: ../gateway
+    command: ["uvicorn", "gateway.main:app", "--host", "0.0.0.0", "--port", "8000"]
     depends_on:
       - postgres
     ports:
       - "8000:8000"
     networks:
-      -anime-net
+      - anime-net
 
-  volumes:
-    postgres_data:
+volumes:
+  postgres_data:
 
-  networks:
-    anime-net:
-      driver: bridge
+networks:
+  anime-net:
+    driver: bridge
