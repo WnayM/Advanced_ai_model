@@ -1,7 +1,5 @@
 from .preprocess import TextPreprocessor
-from .embeddings import EmbeddingModel, EmbeddingConfig
-from .profile import UserProfileBuilder, UserProfileConfig
-from .recommender import NewsRecommender, RecommenderConfig
+from .profile import UserProfileBuilder
 
 __all__ = [
     "TextPreprocessor",
