@@ -1,6 +1,7 @@
-from recommender import NewsRecommender
+from model_core import recommend
 
-def main() -> None:
+
+def main():
     liked_texts = [
         "The new season of Jujutsu Kaisen has officially been announced",
         "A new trailer for the upcoming Demon Slayer arc has been released",
@@ -16,23 +17,12 @@ def main() -> None:
         "A collaboration between a popular anime and a mobile game breaks revenue records",
         "A slice-of-life spin-off of My Hero Academia has been announced",
     ]
-    
-    recommender = NewsRecommender()
 
-    user_vec = recommender.build_user_vector_from_texts(
-        liked_texts=liked_texts,
-        disliked_texts=disliked_texts,
-    )
+    result = recommend(liked_texts, disliked_texts, candidate_news)
 
-    top_indices, scores = recommender.rank_candidates(
-        user_vector=user_vec,
-        candidate_texts=candidate_news,
-        top_k=3, 
-    )
-    
     print("=== Recommendation Results ===")
-    for idx in top_indices:
-        print(f"- {candidate_news[idx]}  (score={scores[idx]:.4f})")
+    for item in result.items:
+        print(f"- {item.title}  (score={item.score:.4f})")
 
 
 if __name__ == "__main__":
