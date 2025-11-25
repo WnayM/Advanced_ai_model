@@ -4,9 +4,9 @@ from typing import Optional, Sequence, Tuple, List
 import numpy as np
 from sentence_transformers import util
 
-from preprocess import TextPreprocessor
-from embeddings import EmbeddingModel
-from profile import UserProfileBuilder
+from .preprocess import TextPreprocessor
+from .embeddings import EmbeddingModel
+from .profile import UserProfileBuilder
 
 @dataclass
 class RecommenderConfig:
