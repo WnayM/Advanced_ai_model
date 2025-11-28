@@ -18,3 +18,13 @@ infr/trafic/
 # Logs & env
 *.log
 .env
+venv311/
+venv/
+.env
+__pycache__/
+*.pyc
+*.pyo
+.env
+.venv
+venv
+.pyc
