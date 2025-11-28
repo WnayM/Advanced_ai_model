@@ -1,3 +1,4 @@
+
 # Python cache
 __pycache__/
 *.pyc
@@ -22,9 +23,16 @@ venv311/
 venv/
 .env
 __pycache__/
-*.pyc
+*.py[cod]
 *.pyo
+*.pyd
+
+venv/
+venv311/
+.venv/
+
+.vscode/
+.idea/
+
+*.log
 .env
-.venv
-venv
-.pyc
