@@ -8,10 +8,7 @@ venv/
 venv311/
 .venv/
 
-# Infrastructure that shouldn't be tracked
-infr/posgres/
-infr/redis/
-infr/trafic/
+
 
 # VSCode
 .vscode/

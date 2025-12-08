@@ -1,6 +1,7 @@
 from __future__ import annotations
 from os import getenv
-from dotenv import load_datenv
+
+from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import DeclarativeBase, sessionmaker
 
@@ -20,7 +21,7 @@ engine = create_engine(
 )
 
 SessionLocal = sessionmaker(
-    bing = engine,
+    bind = engine,
     autoflush = False,
     autocommit = False
 )
