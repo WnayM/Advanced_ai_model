@@ -1,0 +1,68 @@
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: anime
+      POSTGRES_USER: anime
+      POSTGRES_PASSWORD: anime
+    ports:
+      - "5432:5432"
+    networks:
+      - anime-net
+
+  scrapper:
+    build:
+      context: .
+      dockerfile: scrapper/Dockerfile
+    environment:
+      PORT: 8003
+    ports:
+      - "8003:8003"
+    networks:
+      - anime-net
+
+  ai:
+    build:
+      context: .
+      dockerfile: ai/Dockerfile
+    environment:
+      PORT: 8002
+    ports:
+      - "8002:8002"
+    networks:
+      - anime-net
+
+  api:
+    build:
+      context: .
+      dockerfile: gateway/Dockerfile
+    environment:
+      DATABASE_URL: postgresql+psycopg://anime:anime@postgres:5432/anime
+      AI_URL: http://ai:8002
+      SCRAPPER_URL: http://scrapper:8003
+      FETCH_INTERVAL_MIN: 30
+    depends_on:
+      - postgres
+      - ai
+      - scrapper
+    ports:
+      - "8000:8000"
+    networks:
+      - anime-net
+
+  bot:
+    build:
+      context: .
+      dockerfile: bot/Dockerfile
+    environment:
+      BOT_TOKEN: ${BOT_TOKEN}
+      API_URL: http://api:8000
+    depends_on:
+      - api
+    networks:
+      - anime-net
+    restart: unless-stopped
+
+networks:
+  anime-net:
+    driver: bridge

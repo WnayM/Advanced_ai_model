@@ -1,6 +1,6 @@
 from __future__ import annotations
 from dataclasses import dataclass
-from typing import Optional, List
+from typing import Optional, List, Tuple
 import numpy as np
 
 from .recommender import NewsRecommender
@@ -14,9 +14,10 @@ def get_recommender() -> NewsRecommender:
         _recommender = NewsRecommender()
     return _recommender
 
+
 @dataclass
 class RecommendedItem:
-    title: str
+    index: int
     score: float
 
 
@@ -24,13 +25,13 @@ class RecommendedItem:
 class RecommendationResult:
     items: List[RecommendedItem]
 
+
 def recommend(
     liked_texts: List[str],
     disliked_texts: List[str],
     candidate_news: List[str],
     top_k: Optional[int] = None,
 ) -> RecommendationResult:
-
     if not candidate_news:
         raise ValueError("candidate_news cannot be empty")
 
@@ -49,11 +50,10 @@ def recommend(
 
     items: List[RecommendedItem] = []
     for idx in top_indices:
-        title = candidate_news[idx]
-        score = float(scores[idx])
-        items.append(RecommendedItem(title=title, score=score))
+        items.append(RecommendedItem(index=int(idx), score=float(scores[idx])))
 
     return RecommendationResult(items=items)
+
 
 def self_test() -> bool:
     try:
