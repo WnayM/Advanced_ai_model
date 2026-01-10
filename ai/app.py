@@ -1,18 +1,25 @@
 from __future__ import annotations
+
 from typing import List, Optional
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from shared.logging import setup_logging, get_logger
-from ai.recommender import NewsRecommender
 
-from .model_core import(
+from shared.logging import setup_logging, get_logger
+from ai.model_core import (
     recommend as core_recommend,
     self_test as core_self_test,
-    RecommendationResult
+    RecommendationResult,
 )
 
 setup_logging()
 logger = get_logger(__name__)
+
+app = FastAPI(
+    title="Anime News Recommender API",
+    version="1.0.0",
+    description="Recommender based on sentence-transformers embeddings",
+)
+
 
 class RecommendRequest(BaseModel):
     liked_texts: List[str]
@@ -20,41 +27,30 @@ class RecommendRequest(BaseModel):
     candidate_news: List[str]
     top_k: Optional[int] = None
 
+
 class RecommendedItemDTO(BaseModel):
-    title: str
+    index: int
     score: float
+
 
 class RecommendResponse(BaseModel):
     items: List[RecommendedItemDTO]
+
 
 class HealthResponse(BaseModel):
     status: str
 
 
-app = FastAPI(
-    title = "Anime News Recommender API",
-    version = "1.0.0",
-    description = "This is a server Anime News Recommender based on embeddinds"
-)
-
-@app.get("/health", response_model = HealthResponse)
-def heakth_check() -> HealthResponse:
+@app.get("/health", response_model=HealthResponse)
+def health_check() -> HealthResponse:
     ok = core_self_test()
     if ok:
         return HealthResponse(status="ok")
-    raise HTTPException(status_code = 500, detail = "Model self-test failed")
+    raise HTTPException(status_code=500, detail="Model self-test failed")
 
-recommender = NewsRecommender(embedding_model=None)
 
-logger.info(
-    "POST/recommend",
-    extra = {"user_id" : user_id}
-)
-
-@app.post("/recommend", response_model = RecommendResponse)
-
+@app.post("/recommend", response_model=RecommendResponse)
 def recommend_endpoint(payload: RecommendRequest) -> RecommendResponse:
-
     logger.info(
         "POST /recommend called",
         extra={
@@ -73,24 +69,10 @@ def recommend_endpoint(payload: RecommendRequest) -> RecommendResponse:
             top_k=payload.top_k,
         )
     except ValueError as e:
-        raise HTTPException(status_code = 400, detail = str(e))
-    
-    except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
-    
     except Exception as e:
+        logger.exception("Internal model error")
         raise HTTPException(status_code=500, detail=f"Internal model error: {e}")
 
-    items_dto = [
-        RecommendedItemDTO(title=item.title, score=item.score)
-        for item in result.items
-    ]
-
-    logger.info(
-        "Recommendations generated",
-        extra = {
-            "items_count" : len(items_dto)
-        },
-    )
-
+    items_dto = [RecommendedItemDTO(index=i.index, score=i.score) for i in result.items]
     return RecommendResponse(items=items_dto)
