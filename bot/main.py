@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 
 from aiogram import Bot, Dispatcher, F
+from aiogram.client.default import DefaultBotProperties
 from aiogram.types import Message, CallbackQuery
 from aiogram.filters import Command
 
@@ -111,7 +112,8 @@ async def main():
     if not BOT_TOKEN:
         raise RuntimeError("BOT_TOKEN is empty")
 
-    bot = Bot(BOT_TOKEN, parse_mode="HTML")
+    bot = Bot(BOT_TOKEN, default=DefaultBotProperties(parse_mode="HTML"))
+
     dp = Dispatcher()
 
     dp.message.register(cmd_start, Command("start"))

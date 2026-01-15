@@ -19,4 +19,5 @@ COPY scrapper /app/scrapper
 ENV PYTHONPATH=/app
 ENV PYTHONUNBUFFERED=1
 
-CMD ["python", "-m", "scrapper.run"]
+CMD ["uvicorn", "scrapper.app.main:app", "--host", "0.0.0.0", "--port", "8003"]
+
