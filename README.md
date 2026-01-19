@@ -1,29 +1,54 @@
-🧠 Advanced AI Model — Anime News Recommender
+# Advanced_ai_model — Anime News (Scraper + API + Recommender + Telegram Bot)
 
-A microservice for generating personalized anime-related news recommendations using text embeddings.
-The system is built on FastAPI and powered by SentenceTransformers for vector-based semantic similarity.
+A microservice-based project that:
+1) pulls anime news from RSS feeds,  
+2) enriches items via a scrapper service (extracts article text from URLs),  
+3) stores data in PostgreSQL,  
+4) exposes data via an API gateway,  
+5) generates recommendations using sentence-transformers embeddings,  
+6) provides a Telegram bot interface for users.
 
-At the current stage, the project includes:
+---
 
-an embedding model wrapper (EmbeddingModel);
+## Services
 
-a recommendation pipeline (NewsRecommender);
+- **api** (Gateway) — main entrypoint (FastAPI).  
+  - Fetches RSS, calls `scrapper` to enrich articles, writes to DB
+  - Calls `ai` service for `/recommend`
+- **scrapper** — FastAPI service that extracts text/metadata from a given URL (`POST /scrape`)
+- **ai** — FastAPI service that serves `/recommend` using embeddings (sentence-transformers)
+- **postgres** — PostgreSQL database
+- **bot** — Telegram bot that calls the API (e.g. `/news`, `/recommend`)
 
-a production-ready HTTP API (/health, /recommend);
+---
 
-centralized structured logging (shared.logging).
+## Architecture (high level)
 
-🚀 Tech Stack
+Telegram Bot -> API Gateway -> Postgres
+|
++-> Scrapper (POST /scrape)
+|
++-> AI Service (POST /recommend)
 
-Python 3.11
+---
 
-FastAPI — REST API framework
+## Requirements
 
-SentenceTransformers — embeddings
-Default model: sentence-transformers/all-MiniLM-L6-v2
+- Docker + Docker Compose v2
+- (Optional) Python 3.11 if you want to run services locally without Docker
 
-NumPy — vector operations
+---
 
-Pydantic — request/response schemas
+## Quick start (Docker)
 
-Structured logging — via Python logging + dictConfig
+From the repo root:
+
+```bash
+docker compose up -d --build
+docker compose ps
+
+check /health:
+
+curl -s http://localhost:8000/health
+curl -s http://localhost:8003/health
+curl -s http://localhost:8002/health
